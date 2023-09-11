@@ -5,6 +5,8 @@ import {
   chatCompletion,
 } from "@/lib/openai/openai";
 
+export const runtime = 'nodejs'
+
 export async function POST(request: Request) {
   const { messages }: { messages: ChatCompletionMessageParam[] } =
     await request.json();

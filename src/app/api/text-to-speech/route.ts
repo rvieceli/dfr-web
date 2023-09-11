@@ -4,6 +4,8 @@ import { uploadFile } from "@/lib/aws/s3";
 import { textToSpeech } from '@/lib/aws/polly';
 // import { textToSpeech } from "@/lib/eleven-labs/eleven-labs";
 
+export const runtime = 'nodejs'
+
 export async function POST(request: Request) {
   const { text }: { text: string } = await request.json();
 
