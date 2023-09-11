@@ -57,7 +57,15 @@ export function Chat() {
   const [messages, setMessages] = useState<ChatCompletionMessageParam[]>([
     {
       role: "system",
+      content: `Today is ${new Date().toISOString().substring(0, 10)}`,
+    },
+    {
+      role: "system",
       content: "Sei un segretario virtuale e riceverai una telefonata",
+    },
+    {
+      role: "system",
+      content: "Dovrai chiedere i sintomi che ha e proporre un appuntamento",
     },
   ]);
   const [audioMap, setAudioMap] = useState<Record<string, string>>({});

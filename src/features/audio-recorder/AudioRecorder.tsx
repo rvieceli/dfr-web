@@ -77,7 +77,10 @@ export function AudioRecorder({
           "bg-red-500 hover:bg-red-300": isRecording,
         }
       )}
-      onClick={isRecording ? stopRecording : startRecording}
+      // onClick={isRecording ? stopRecording : startRecording}
+      onMouseDown={startRecording}
+      onMouseLeave={stopRecording}
+      onMouseUp={stopRecording}
     >
       <RecordSVG isRecording={isRecording} />
     </button>
