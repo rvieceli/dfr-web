@@ -26,13 +26,25 @@ export function AudioRecorder({
 }: AudioRecorderProps) {
   const onStop = useCallback<OnStop>(
     async (blobUrl, blob) => {
-      const formData = new FormData();
-
-      formData.append("file", blob, "file.webm");
-
       try {
+        const audioContext = new AudioContext();
+        const audioDetails = await audioContext.decodeAudioData(
+          await blob.arrayBuffer()
+        );
+
+        if (audioDetails.duration < 0.2) {
+          onEndTranscribing?.();
+          alert("Audio too short");
+          return;
+        }
+
+        audioContext.close();
+
         onStartTranscribing?.();
 
+        const formData = new FormData();
+
+        formData.append("file", blob, "file.webm");
         const response = await fetch("/api/transcript", {
           method: "POST",
           body: formData,
@@ -48,7 +60,9 @@ export function AudioRecorder({
         }
       } catch (error) {
         console.error(error);
-        alert("Error transcribing audio");
+        alert(
+          error instanceof Error ? error.message : "Error transcribing audio"
+        );
       } finally {
         onEndTranscribing?.();
       }
@@ -75,12 +89,16 @@ export function AudioRecorder({
         {
           "hover:bg-gray-300 focus:outline-none": !isRecording,
           "bg-red-500 hover:bg-red-300": isRecording,
+          "animate-ping": isRecording,
         }
       )}
-      // onClick={isRecording ? stopRecording : startRecording}
+      onTouchStart={startRecording}
       onMouseDown={startRecording}
-      onMouseLeave={stopRecording}
       onMouseUp={stopRecording}
+      onMouseOut={stopRecording}
+      onTouchEnd={stopRecording}
+      onTouchMove={stopRecording}
+      onClick={stopRecording}
     >
       <RecordSVG isRecording={isRecording} />
     </button>

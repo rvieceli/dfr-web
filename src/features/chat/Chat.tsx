@@ -59,14 +59,6 @@ export function Chat() {
       role: "system",
       content: `Today is ${new Date().toISOString().substring(0, 10)}`,
     },
-    {
-      role: "system",
-      content: "Sei un segretario virtuale e riceverai una telefonata",
-    },
-    {
-      role: "system",
-      content: "Dovrai chiedere i sintomi che ha e proporre un appuntamento",
-    },
   ]);
   const [audioMap, setAudioMap] = useState<Record<string, string>>({});
 
@@ -225,7 +217,7 @@ export function Chat() {
         })}
         <div ref={chatBottomRef} className="flex items-center justify-center">
           {state === "idle" ? null : (
-            <div>
+            <div className="flex">
               <svg
                 className="animate-spin -ml-1 mr-3 h-5 w-5 text-blue-500"
                 xmlns="http://www.w3.org/2000/svg"
@@ -238,7 +230,7 @@ export function Chat() {
                   cy="12"
                   r="10"
                   stroke="currentColor"
-                  stroke-width="4"
+                  strokeWidth="4"
                 ></circle>
                 <path
                   className="opacity-75"
