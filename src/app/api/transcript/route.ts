@@ -16,9 +16,3 @@ export async function POST(request: Request) {
 
   return NextResponse.json({ text, audio_url });
 }
-
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
