@@ -37,6 +37,12 @@ export function AudioRecorder({
           alert("Audio too short");
           return;
         }
+        
+        if (audioDetails.duration > 10) {
+          onEndTranscribing?.();
+          alert("Audio too long (max 10 seconds)");
+          return;
+        }
 
         audioContext.close();
 
