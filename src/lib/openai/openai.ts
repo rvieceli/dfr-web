@@ -50,7 +50,7 @@ const functions: ChatCompletionCreateParams.Function[] = [
 export async function chatCompletion(messages: ChatCompletionMessageParam[]) {
   const newMessages = [...messages];
 
-  const assistantMessage = await askGpt(messages);
+  const assistantMessage = await askGpt(newMessages);
 
   newMessages.push(assistantMessage);
 
@@ -59,7 +59,7 @@ export async function chatCompletion(messages: ChatCompletionMessageParam[]) {
 
     newMessages.push(functionResponse);
 
-    const assistantMessageWithData = await askGpt(messages);
+    const assistantMessageWithData = await askGpt(newMessages);
 
     newMessages.push(assistantMessageWithData);
   }
