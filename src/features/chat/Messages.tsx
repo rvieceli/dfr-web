@@ -53,6 +53,7 @@ export function Messages({
               message={message}
               audio_url={getUrl(audioMap, message.content)}
               style={style}
+              isRight={isRight}
             />
           ))}
 
@@ -60,6 +61,7 @@ export function Messages({
             message={last}
             audio_url={getUrl(audioMap, last.content)}
             style={style}
+            isRight={isRight}
             isLast
           />
         </div>
@@ -80,29 +82,44 @@ function RenderMessage({
   message,
   audio_url,
   isLast = false,
+  isRight = false,
   style = "bg-gray-700 text-gray-100",
 }: {
   message: ChatCompletionMessageParam;
   audio_url?: string;
   isLast?: boolean;
   style?: string;
+  isRight?: boolean;
 }) {
   const className = classNames("px-4 py-2 rounded-lg inline-block", style, {
-    "rounded-bl-none": isLast,
+    "rounded-bl-none": isLast && !isRight,
+    "rounded-br-none": isLast && isRight,
   });
+
+  if (message.content) {
+    return (
+      <>
+        <div key={message.content}>
+          <span className={className}>{message.content}</span>
+        </div>
+        {audio_url && (
+          <div key={`${message.content}-audio`}>
+            <audio
+              controls
+              src={audio_url}
+              className="rounded-none bg-gray-100"
+            />
+          </div>
+        )}
+      </>
+    );
+  }
 
   return (
     <div key={message.content}>
-      {message.content ? (
-        <>
-          <span className={className}>{message.content}</span>
-          {audio_url && <audio controls src={audio_url} />}
-        </>
-      ) : (
-        <pre className={className}>
-          {JSON.stringify(message.function_call, null, 2)}
-        </pre>
-      )}
+      <pre className={className}>
+        {JSON.stringify(message.function_call, null, 2)}
+      </pre>
     </div>
   );
 }

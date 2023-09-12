@@ -17,6 +17,9 @@ export async function transcribe(file: Uploadable): Promise<string> {
   const response = await openai.audio.transcriptions.create({
     file,
     model: "whisper-1",
+    language: "it",
+    prompt: "Trascrivi questo audio in italiano",
+    temperature: 0.2,
   });
 
   return response.text;
@@ -73,6 +76,7 @@ async function askGpt(messages: ChatCompletionMessageParam[]) {
     messages,
     functions,
     function_call: "auto",
+    temperature: 0.2,
   });
 
   return response.choices[0].message;

@@ -8,6 +8,7 @@ import {
   useReactMediaRecorder,
 } from "react-media-recorder";
 import { RecordSVG } from "./RecordSVG";
+import { validateAudioDuration } from "@/lib/webapi/audio-context";
 
 type OnStop = NonNullable<ReactMediaRecorderHookProps["onStop"]>;
 
@@ -27,34 +28,24 @@ export function AudioRecorder({
   const onStop = useCallback<OnStop>(
     async (blobUrl, blob) => {
       try {
-        const audioContext = new AudioContext();
-        const audioDetails = await audioContext.decodeAudioData(
-          await blob.arrayBuffer()
-        );
-
-        if (audioDetails.duration < 0.2) {
-          onEndTranscribing?.();
-          alert("Audio too short");
-          return;
-        }
-        
-        if (audioDetails.duration > 10) {
-          onEndTranscribing?.();
-          alert("Audio too long (max 10 seconds)");
-          return;
-        }
-
-        audioContext.close();
+        await validateAudioDuration(blob);
 
         onStartTranscribing?.();
 
         const formData = new FormData();
 
         formData.append("file", blob, "file.webm");
+
         const response = await fetch("/api/transcript", {
           method: "POST",
           body: formData,
         });
+
+        if (!response.ok || response.status !== 200) {
+          const { message } = await response.json();
+
+          throw new Error(message);
+        }
 
         const data: {
           text: string;
@@ -65,9 +56,14 @@ export function AudioRecorder({
           onTranscript?.(data);
         }
       } catch (error) {
-        console.error(error);
-        alert(
-          error instanceof Error ? error.message : "Error transcribing audio"
+        setTimeout(
+          () =>
+            alert(
+              error instanceof Error
+                ? error.message
+                : "Error transcribing audio"
+            ),
+          300
         );
       } finally {
         onEndTranscribing?.();
@@ -88,25 +84,34 @@ export function AudioRecorder({
   const isRecording = status === "recording";
 
   return (
-    <button
-      type="button"
-      className={classNames(
-        "inline-flex items-center justify-center rounded-full h-12 w-12 transition duration-500 ease-in-out",
-        {
-          "hover:bg-gray-300 focus:outline-none": !isRecording,
-          "bg-red-500 hover:bg-red-300": isRecording,
-          "animate-ping": isRecording,
-        }
-      )}
-      onTouchStart={startRecording}
-      onMouseDown={startRecording}
-      onMouseUp={stopRecording}
-      onMouseOut={stopRecording}
-      onTouchEnd={stopRecording}
-      onTouchMove={stopRecording}
-      onClick={stopRecording}
-    >
-      <RecordSVG isRecording={isRecording} />
-    </button>
+    <div className={"h-12 w-12  relative"}>
+      <div
+        className={classNames(
+          "absolute bg-red-500 animate-ping inline-flex h-full w-full rounded-full opacity-75",
+          {
+            hidden: !isRecording,
+          }
+        )}
+      />
+      <button
+        className={classNames(
+          "inline-flex items-center justify-center rounded-full  transition duration-500 ease-in-out relative",
+          {
+            "hover:bg-gray-300 focus:outline-none": !isRecording,
+            "bg-red-500 hover:bg-red-300": isRecording,
+          }
+        )}
+        type="button"
+        onTouchStart={startRecording}
+        onMouseDown={startRecording}
+        onMouseUp={stopRecording}
+        onMouseOut={stopRecording}
+        onTouchEnd={stopRecording}
+        // onTouchMove={stopRecording}
+        onClick={stopRecording}
+      >
+        <RecordSVG isRecording={isRecording} />
+      </button>
+    </div>
   );
 }

@@ -5,13 +5,24 @@ import {
   chatCompletion,
 } from "@/lib/openai/openai";
 
-export const runtime = 'nodejs'
+export const runtime = "nodejs";
 
 export async function POST(request: Request) {
   const { messages }: { messages: ChatCompletionMessageParam[] } =
     await request.json();
 
-  const answer = await chatCompletion(messages);
+  try {
+    const answer = await chatCompletion(messages);
+    return NextResponse.json({ answer });
+  } catch (error) {
+    console.log(error);
+    if (error instanceof Error) {
+      return NextResponse.json({ error: error.message }, { status: 400 });
+    }
 
-  return NextResponse.json({ answer });
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
+  }
 }

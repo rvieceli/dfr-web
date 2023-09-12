@@ -9,11 +9,23 @@ export const runtime = "nodejs";
 export async function POST(request: Request) {
   const { text }: { text: string } = await request.json();
 
-  const buffer = await textToSpeech(text);
+  try {
+    const buffer = await textToSpeech(text);
 
-  const audio_url = await uploadFile(text, buffer);
+    const audio_url = await uploadFile(text, buffer);
 
-  return NextResponse.json({ audio_url });
+    return NextResponse.json({ audio_url });
+  } catch (error) {
+    console.log(error);
+    if (error instanceof Error) {
+      return NextResponse.json({ error: error.message }, { status: 400 });
+    }
+
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
+  }
 }
 
 /*

@@ -59,6 +59,10 @@ export function Chat() {
       role: "system",
       content: `Today is ${new Date().toISOString().substring(0, 10)}`,
     },
+    {
+      role: "system",
+      content: "The chat will be exclusively in Italian",
+    },
   ]);
   const [audioMap, setAudioMap] = useState<Record<string, string>>({});
 
@@ -196,7 +200,7 @@ export function Chat() {
   }, []);
 
   return (
-    <div className="flex-1 p:2 sm:p-6 justify-between flex flex-col h-screen">
+    <div className="flex-1 p:2 sm:p-6 justify-between flex flex-col h-[calc(100dvh)]">
       <div
         id="messages"
         className="flex flex-col space-y-4 p-3 overflow-y-auto scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch"
