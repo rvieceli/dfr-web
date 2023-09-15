@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { transcribe } from "@/lib/openai/openai";
+import { speechToText } from "@/lib/openai/openai";
 import { uploadFile } from "@/lib/aws/s3";
 
 export const runtime = "nodejs";
@@ -11,7 +11,7 @@ export async function POST(request: Request) {
   const buffer = Buffer.from(await file.arrayBuffer());
 
   try {
-    const text = await transcribe(file);
+    const text = await speechToText(file);
 
     if (!text) throw new Error("No text transcribed");
 

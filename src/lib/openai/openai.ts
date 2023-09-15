@@ -13,7 +13,7 @@ const openai = new OpenAI({
   organization: process.env.OPENAI_ORGANIZATION,
 });
 
-export async function transcribe(file: Uploadable): Promise<string> {
+export async function speechToText(file: Uploadable): Promise<string> {
   const response = await openai.audio.transcriptions.create({
     file,
     model: "whisper-1",

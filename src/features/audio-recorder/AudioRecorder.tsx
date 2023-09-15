@@ -36,7 +36,7 @@ export function AudioRecorder({
 
         formData.append("file", blob, "file.webm");
 
-        const response = await fetch("/api/transcript", {
+        const response = await fetch("/api/speech-to-text", {
           method: "POST",
           body: formData,
         });
